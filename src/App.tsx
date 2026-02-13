@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import './core/styles/app.css';
 import './core/styles/toast.css';
 import { VentaConDetalles, UnidadMedida, Promocion, DetalleVentaInput, PromocionConDetalles, Gasto, Categoria } from './core/types';
@@ -571,6 +572,9 @@ function App() {
           message={confirm.message}
           type={confirm.type}
         />
+        
+        {/* Vercel Web Analytics */}
+        <Analytics />
       </div>
     </ProductosProvider>
   );
