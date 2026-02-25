@@ -62,7 +62,7 @@ const ProductRow = React.memo<{
                         />
                         <button type="button" className="qty-button" onClick={() => onChangeCantidad(item.id_producto, item.cantidad + 1)}>+</button>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                            <span style={{ fontWeight: 'bold', width: 'fit-content' }}>${item.cantidad * item.precioventa}</span>
+                            <span style={{ fontWeight: 'bold', width: 'fit-content' }}>${Math.round(item.cantidad * item.precioventa)}</span>
                             <button className="btn-remove" onClick={() => onRemove(item.id_producto)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -486,7 +486,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
                         fontWeight: 'bold'
                     }}>
                         <span>Total:</span>
-                        <span>${calcularTotal}</span>
+                        <span>${Math.round(calcularTotal)}</span>
                     </div>
                 </div>
 
