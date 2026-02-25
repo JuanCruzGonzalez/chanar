@@ -31,7 +31,7 @@ const ProductRow = React.memo<{
                             value={item.unidadMedida.id_unidad_medida === 1 ? String(item.precioventa * 100) : String(item.precioventa)}
                             onChange={(e) => {
                                 const val = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                                onUpdatePrice(item.id_producto, item.unidadMedida.id_unidad_medida === 1 ? val / 100 : val);
+                                onUpdatePrice(item.id_producto, item.unidadMedida.id_unidad_medida === 1 ? Math.round((val / 100) * 100) / 100 : val);
                             }}
                             min="0"
                         />
