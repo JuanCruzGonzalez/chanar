@@ -293,7 +293,7 @@
 
 .cliente-product-card {
   background: white;
-  border-radius: 20px;
+  border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
@@ -420,7 +420,7 @@
   padding: 12px;
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 5px;
   font-size: 15px;
   font-weight: 600;
   transition: all 0.3s ease;
@@ -1333,6 +1333,28 @@
   .cliente-modal-content {
     margin: 0 16px;
   }
+
+  .cliente-product-content{
+    padding: 20px 15px;
+    min-height: 185px;
+  }
+
+  .cliente-product-title{
+    font-size: 12px;
+  }
+
+  .cliente-product-description{
+    margin-bottom: 0;
+  }
+
+  .cliente-product-price{
+    font-size: 15px;
+  }
+
+  .cliente-product-add-btn{
+    border-radius: 5px;
+    font-size: 11px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1351,7 +1373,7 @@
   }
 
   .cliente-products-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 
   .cliente-product-image-container {
@@ -2383,6 +2405,10 @@
 
   .promocion-card-price {
     font-size: 24px;
+  }
+
+  .cliente-product-card{
+    min-height: 385px;
   }
 }
 

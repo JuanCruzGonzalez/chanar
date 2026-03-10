@@ -145,8 +145,14 @@ export const ProductosPage: React.FC = () => {
                       )}
                     </td>
                     <td className="font-medium">{producto.nombre}</td>
-                    <td className="text-muted">{producto.unidad_medida?.id_unidad_medida === 1 ? producto.costo * 100 : producto.costo}</td>
-                    <td className="text-muted">{producto.unidad_medida?.id_unidad_medida === 1 ? producto.precioventa * 100 : producto.precioventa}</td>
+                    <td className="text-muted">
+                      ${producto.unidad_medida?.id_unidad_medida === 1 ? (producto.costo * 100).toFixed(2) : producto.costo.toFixed(2)}
+                      {producto.unidad_medida?.id_unidad_medida === 1 ? ' x100gr' : ''}
+                    </td>
+                    <td className="text-muted">
+                      ${producto.unidad_medida?.id_unidad_medida === 1 ? (producto.precioventa * 100).toFixed(2) : producto.precioventa.toFixed(2)}
+                      {producto.unidad_medida?.id_unidad_medida === 1 ? ' x100gr' : ''}
+                    </td>
                     <td className="text-muted">{producto.vencimiento ? new Date(producto.vencimiento).toLocaleDateString() : 'N/A'}</td>
                     <td>
                       <span className={`status-badge ${producto.estado ? 'active' : 'inactive'}`}>
