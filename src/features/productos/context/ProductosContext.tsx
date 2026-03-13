@@ -352,7 +352,7 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
       if (updated) {
         showSuccess(`Producto ${updated.nombre} actualizado correctamente`);
       }
-    },
+    }, 
     onError: (err: any) => {
       const message =
         err?.message || err?.error || (typeof err === 'string' ? err : JSON.stringify(err));
