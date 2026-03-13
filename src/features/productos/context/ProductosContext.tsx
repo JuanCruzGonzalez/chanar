@@ -345,7 +345,7 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
   const toggleEstadoMutation = useMutation({
     mutationFn: async ({ id_producto, newEstado }: { id_producto: number; newEstado: boolean }) => {
       return await updateProductoEstado(id_producto, newEstado);
-    },
+    }, 
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.productos });
       queryClient.invalidateQueries({ queryKey: queryKeys.productosActivos });
