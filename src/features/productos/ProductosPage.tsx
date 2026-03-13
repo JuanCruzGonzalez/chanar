@@ -6,7 +6,6 @@ import { getProductImageUrl } from '../../shared/services/storageService';
 import { useProductos } from './context/ProductosContext';
 import { Pagination } from '../../shared/components/Pagination';
 import { ModalNuevoProducto } from './components/ModalNuevoProducto';
-import { ModalActualizarStock } from './components/ModalActualizarStock';
 import { getUnidadesMedidas } from './services/productoService';
 import { useCategorias } from '../categorias/context/CategoriasContext';
 
@@ -99,7 +98,7 @@ export const ProductosPage: React.FC = () => {
         currentPage={productosPageNum}
         totalItems={productosTotal}
         pageSize={PAGE_SIZE}
-        onPageChange={loadProductosPage}
+        onPageChange={(page) => loadProductosPage(page, debounced)}
       />
       <div className="card">
         <div className="table-wrapper">
@@ -222,7 +221,7 @@ export const ProductosPage: React.FC = () => {
         currentPage={productosPageNum}
         totalItems={productosTotal}
         pageSize={PAGE_SIZE}
-        onPageChange={loadProductosPage}
+        onPageChange={(page) => loadProductosPage(page, debounced)}
       />
 
       {/* Modales */}
@@ -230,7 +229,6 @@ export const ProductosPage: React.FC = () => {
         unidadesMedida={unidadesMedida}
         categorias={categorias}
       />
-      <ModalActualizarStock />
     </div>
   );
 };

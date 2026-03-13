@@ -317,7 +317,8 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
    */
   const actualizarStockMutation = useMutation({
     mutationFn: async ({ productoId, cantidad }: { productoId: number; cantidad: number }) => {
-      const producto = productosQuery.data?.productos.find((p) => p.id_producto === productoId);
+      // Buscar en productosActivos (todos los productos activos)
+      const producto = productosActivosQuery.data?.find((p) => p.id_producto === productoId);
       if (!producto) throw new Error('Producto no encontrado');
 
       const nuevoStock = producto.stock + cantidad;

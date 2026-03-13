@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useProductos } from '../productos/context/ProductosContext';
 import { Pagination } from '../../shared/components/Pagination';
+import { ModalActualizarStock } from '../productos/components/ModalActualizarStock';
 
 interface StockPageProps { }
 
@@ -113,6 +114,7 @@ export const StockPage: React.FC<StockPageProps> = () => {
           <strong>⚠️ Atención:</strong> {stockBajo.length} producto(s) con stock bajo requieren reposición.
         </div>
       )}
+      <ModalActualizarStock />
     </div>
   );
 };
