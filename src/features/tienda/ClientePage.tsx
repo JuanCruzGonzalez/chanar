@@ -4,6 +4,7 @@ import { getProductosActivos } from '../productos/services/productoService';
 import { getCategoriasActivas } from '../categorias/services/categoriaService';
 import { ClientePromociones } from '../promociones/components/ClientePromociones';
 import { ProductImageSlider } from './components/ProductImageSlider';
+import { ModalVerProducto } from './components/ModalVerProducto';
 import { DatosClienteModal } from './components/DatosClienteModal';
 import { supabase } from '../../core/config/supabase';
 import { formatPrice } from '../../shared/utils';
@@ -52,6 +53,7 @@ export const ClientePage: React.FC = () => {
   const [categoriasPanelOpen, setCategoriasPanelOpen] = useState(false);
   const [expandedParentIds, setExpandedParentIds] = useState<number[]>([]);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [modalProducto, setModalProducto] = useState<Producto | null>(null);
 
   useEffect(() => {
     cargarProductos();
@@ -328,7 +330,7 @@ export const ClientePage: React.FC = () => {
                 {/* Grid de productos */}
                 <div className="cliente-products-grid">
                   {productosPaginados.map(producto => (
-                    <div key={producto.id_producto} className="cliente-product-card">
+                    <div key={producto.id_producto} className="cliente-product-card" onClick={() => setModalProducto(producto)} style={{ cursor: 'pointer' }}>
                       {/* Slider de imágenes del producto */}
                       <div className="cliente-product-image-container">
                         <ProductImageSlider
@@ -353,13 +355,13 @@ export const ClientePage: React.FC = () => {
                         </div>
 
                         {/* Botón de agregar o controles de cantidad */}
-                        {(() => {
+                        {(() => { // eslint-disable-line
                           const itemEnCarrito = obtenerItemEnCarrito(producto.id_producto);
 
                           if (itemEnCarrito) {
                             // Mostrar controles + y -
                             return (
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
                                 <div className="cliente-product-price-container">
                                   {producto.promocion_activa && producto.precio_promocion != null ? (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -437,7 +439,7 @@ export const ClientePage: React.FC = () => {
                           } else {
                             // Mostrar botón de agregar
                             return (
-                              <>
+                              <div onClick={e => e.stopPropagation()}>
                                 <div>
                                   <div className="cliente-product-price-container">
                                     {producto.promocion_activa && producto.precio_promocion != null ? (
@@ -490,7 +492,7 @@ export const ClientePage: React.FC = () => {
                                     {producto.stock > 0 ? '+ Agregar al carrito' : 'Sin stock'}
                                   </button>
                                 </div>
-                              </>
+                              </div>
                             );
                           }
                         })()}
@@ -808,6 +810,16 @@ export const ClientePage: React.FC = () => {
         onClose={cerrarModalDatosCliente}
         onConfirm={confirmarPedidoCliente}
       />
+
+      {/* Modal ver producto */}
+      {modalProducto && (
+        <ModalVerProducto
+          producto={modalProducto}
+          categorias={categorias}
+          productosCategorias={productosCategorias}
+          onClose={() => setModalProducto(null)}
+        />
+      )}
     </div>
   );
 };
