@@ -51,6 +51,7 @@ export const ClientePage: React.FC = () => {
   const [priceFilter, setPriceFilter] = useState(0);
   const [categoriasPanelOpen, setCategoriasPanelOpen] = useState(false);
   const [expandedParentIds, setExpandedParentIds] = useState<number[]>([]);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
     cargarProductos();
@@ -190,7 +191,7 @@ export const ClientePage: React.FC = () => {
       <header className="cliente-header">
         <div className="cliente-header-content">
           <button
-            className="cliente-categorias-hamburger"
+            className="cliente-categorias-hamburger categorias-mobile-only"
             onClick={() => setCategoriasPanelOpen(true)}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -202,7 +203,7 @@ export const ClientePage: React.FC = () => {
               <span className="cliente-categorias-badge">{categoriasSeleccionadas.length}</span>
             )}
           </button>
-          <div className="cliente-header-logo">
+          <div className={`cliente-header-logo${searchFocused ? ' search-active' : ''}`}>
             <div className="cliente-header-icon">
               <img src="/logo.png" alt="Logo Chañar" style={{ width: 105, height: 'auto' }} />
             </div>
@@ -240,6 +241,8 @@ export const ClientePage: React.FC = () => {
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               className="cliente-header-search-input"
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
             />
           </div>
 
@@ -306,6 +309,20 @@ export const ClientePage: React.FC = () => {
                       : `${productosFiltrados.length} producto${productosFiltrados.length !== 1 ? 's' : ''}`
                     }
                   </p>
+                  <button
+                    className="cliente-categorias-hamburger categorias-desktop-only"
+                    onClick={() => setCategoriasPanelOpen(true)}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                    Categorias
+                    {categoriasSeleccionadas.length > 0 && (
+                      <span className="cliente-categorias-badge">{categoriasSeleccionadas.length}</span>
+                    )}
+                  </button>
                 </div>
 
                 {/* Grid de productos */}
