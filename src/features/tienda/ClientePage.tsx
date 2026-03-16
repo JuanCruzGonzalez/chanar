@@ -8,6 +8,7 @@ import { ModalVerProducto } from './components/ModalVerProducto';
 import { DatosClienteModal } from './components/DatosClienteModal';
 import { supabase } from '../../core/config/supabase';
 import { formatPrice } from '../../shared/utils';
+import { normalizeTexto } from '../../shared/utils/normalize';
 import { useCarrito } from './context/CarritoContext';
 import './ClientePage.css';
 
@@ -103,7 +104,7 @@ export const ClientePage: React.FC = () => {
 
   const productosFiltrados = useMemo(() => {
     let result = productos.filter(p =>
-      p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+      normalizeTexto(p.nombre).includes(normalizeTexto(busqueda))
     );
 
     // Filtrar por categorías seleccionadas
