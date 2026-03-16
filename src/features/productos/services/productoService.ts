@@ -157,6 +157,19 @@ export async function buscarProductos(q: string) {
   const qTrim = (q || '').trim();
   if (!qTrim) return getProductos();
 
+  // Obtener IDs coincidentes con búsqueda sin tildes via RPC
+  const { data: idsData, error: rpcError } = await supabase
+    .rpc('buscar_productos_sin_tildes', { q: qTrim });
+
+  if (rpcError) {
+    console.error('Error en búsqueda sin tildes:', rpcError);
+    await handleAuthError(rpcError);
+    throw rpcError;
+  }
+
+  const ids = (idsData || []).map((r: any) => r.id_producto) as number[];
+  if (ids.length === 0) return [];
+
   const { data, error } = await supabase
     .from('producto')
     .select(`
@@ -176,7 +189,7 @@ export async function buscarProductos(q: string) {
       abreviacion
     )
   `)
-    .or(`nombre.ilike.%${qTrim}%,descripcion.ilike.%${qTrim}%`)
+    .in('id_producto', ids)
   .order('nombre', { ascending: true })
   .range(0, 999);
 
@@ -233,8 +246,21 @@ export async function getProductosPage(page = 1, pageSize = 5, q = '') {
     .order('nombre', { ascending: true });
 
   if (q && q.trim()) {
-    const qTrim = q.trim();
-    query = query.or(`nombre.ilike.%${qTrim}%,descripcion.ilike.%${qTrim}%`);
+    // Búsqueda accent-insensitive via RPC
+    const { data: idsData, error: rpcError } = await supabase
+      .rpc('buscar_productos_sin_tildes', { q: q.trim() });
+
+    if (rpcError) {
+      console.error('Error en búsqueda sin tildes:', rpcError);
+      await handleAuthError(rpcError);
+      throw rpcError;
+    }
+
+    const ids = (idsData || []).map((r: any) => r.id_producto) as number[];
+    if (ids.length === 0) {
+      return { productos: [], total: 0 };
+    }
+    query = query.in('id_producto', ids);
   }
 
   const { data, count, error } = await query.range(from, to);

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useProductos } from '../context/ProductosContext';
+import { normalizeTexto } from '../../../shared/utils';
 
 interface ModalActualizarStockProps { }
 
@@ -35,7 +36,7 @@ export const ModalActualizarStock = React.memo<ModalActualizarStockProps>(() => 
   if (!isOpen) return null;
 
   const productosFiltrados = productosActivos.filter(p =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+    normalizeTexto(p.nombre).includes(normalizeTexto(busqueda))
   ).slice(0, 10);
 
   const productoSeleccionado = productosActivos.find(p => p.id_producto === parseInt(productoId));

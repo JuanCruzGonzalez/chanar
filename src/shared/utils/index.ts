@@ -14,3 +14,6 @@ export * from './unidadMedida';
 
 // Fechas
 export * from './dates';
+
+// Normalización de texto (búsqueda sin tildes)
+export * from './normalize';
