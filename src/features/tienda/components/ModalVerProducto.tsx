@@ -42,7 +42,7 @@ export const ModalVerProducto: React.FC<ModalVerProductoProps> = ({
 
                 {/* Header */}
                 <div className="mvp-header">
-                    <div className="mvp-header-copy">
+                    <div className="mvp-header-copy"> 
                         <span className="mvp-eyebrow">Detalle del producto</span>
                         <span className="mvp-header-title">{producto.nombre}</span>
                     </div>
