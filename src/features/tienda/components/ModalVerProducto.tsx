@@ -14,8 +14,6 @@ interface ModalVerProductoProps {
 
 export const ModalVerProducto: React.FC<ModalVerProductoProps> = ({
     producto,
-    categorias,
-    productosCategorias,
     onClose,
 }) => {
     const { manejarAgregarProducto, obtenerItemEnCarrito, actualizarCantidad } = useCarrito();
@@ -37,10 +35,6 @@ export const ModalVerProducto: React.FC<ModalVerProductoProps> = ({
             : producto.precio_promocion!)
         : null;
     const unidadLabel = producto.id_unidad_medida === 1 ? ' x 100gr' : '';
-
-    const categoriasDelProducto = (productosCategorias.get(producto.id_producto) || [])
-        .map(id => categorias.find(c => c.id_categoria === id))
-        .filter(Boolean) as Categoria[];
 
     return (
         <div className="mvp-overlay" onClick={onClose}>
