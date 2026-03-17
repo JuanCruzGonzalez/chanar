@@ -103,8 +103,9 @@ export const ClientePage: React.FC = () => {
   };
 
   const productosFiltrados = useMemo(() => {
+    const q = normalizeTexto(busqueda);
     let result = productos.filter(p =>
-      normalizeTexto(p.nombre).includes(normalizeTexto(busqueda))
+      normalizeTexto(p.nombre).includes(q)
     );
 
     // Filtrar por categorías seleccionadas
@@ -126,6 +127,20 @@ export const ClientePage: React.FC = () => {
           precio = precio * 100;
         }
         return precio <= priceFilter;
+      });
+    }
+
+    // Ordenar por relevancia cuando hay búsqueda
+    if (q) {
+      result.sort((a, b) => {
+        const score = (nombre: string) => {
+          const n = normalizeTexto(nombre);
+          if (n === q) return 0;
+          if (n.startsWith(q)) return 1;
+          if (n.split(/\s+/).some(w => w.startsWith(q))) return 2;
+          return 3;
+        };
+        return score(a.nombre) - score(b.nombre);
       });
     }
 

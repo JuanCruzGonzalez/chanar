@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '../../lib/queryClient';
 import { useDebounce } from '../../shared/hooks/useDebounce';
 import { getProductImageUrl } from '../../shared/services/storageService';
+import { normalizeTexto } from '../../shared/utils/normalize';
 import { useProductos } from './context/ProductosContext';
 import { Pagination } from '../../shared/components/Pagination';
 import { ModalNuevoProducto } from './components/ModalNuevoProducto';
@@ -46,12 +47,26 @@ export const ProductosPage: React.FC = () => {
   const stockBajo = productos.filter(p => p.stock < 10).length;
 
   const displayedProducts = React.useMemo(() => {
-    return productos.filter(p => {
+    const filtered = productos.filter(p => {
       if (statusFilter === 'active' && !p.estado) return false;
       if (statusFilter === 'inactive' && p.estado) return false;
       return true;
     });
-  }, [productos, statusFilter]);
+
+    const q = normalizeTexto(productosSearchQuery);
+    if (!q) return filtered;
+
+    return [...filtered].sort((a, b) => {
+      const score = (nombre: string) => {
+        const n = normalizeTexto(nombre);
+        if (n === q) return 0;
+        if (n.startsWith(q)) return 1;
+        if (n.split(/\s+/).some(w => w.startsWith(q))) return 2;
+        return 3;
+      };
+      return score(a.nombre) - score(b.nombre);
+    });
+  }, [productos, statusFilter, productosSearchQuery]);
 
   return (
     <div className="page">
