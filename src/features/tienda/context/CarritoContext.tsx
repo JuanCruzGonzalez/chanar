@@ -15,6 +15,7 @@ import { calculateCartTotal } from '../../../shared/utils/calculations';
 import { formatPrice } from '../../../shared/utils';
 import { createPedido } from '../../pedidos/services/pedidoService';
 import { queryKeys } from '../../../lib/queryClient';
+import { getProductImageUrl } from '../../../shared/services/storageService';
 
 /**
  * Interfaz para items del carrito
@@ -27,6 +28,7 @@ export interface ItemCarrito {
   descripcion?: string | null; // Descripción del producto/promoción
   precio: number;
   cantidad: number;
+  imagen?: string;
   unidadMedidaId?: number;
   unidadMedidaNombre?: string;
 }
@@ -122,6 +124,8 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
             : item
         );
       } else {
+        const imagePath = producto.imagenes?.[0]?.imagen_path ?? producto.imagen_path ?? null;
+        const imagen = getProductImageUrl(imagePath) ?? undefined;
         return [...prevCarrito, {
           id,
           tipo: 'producto' as const,
@@ -130,6 +134,7 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
           descripcion: producto.descripcion,
           precio,
           cantidad,
+          imagen,
           unidadMedidaId: producto.id_unidad_medida,
           unidadMedidaNombre: producto.unidad_medida?.abreviacion || '',
         }];
@@ -153,6 +158,7 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
             : item
         );
       } else {
+        const imagen = getProductImageUrl(promocion.imagen_path ?? null) ?? undefined;
         return [...prevCarrito, {
           id,
           tipo: 'promocion' as const,
@@ -160,6 +166,7 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
           nombre: promocion.name,
           precio,
           cantidad,
+          imagen,
         }];
       }
     });
