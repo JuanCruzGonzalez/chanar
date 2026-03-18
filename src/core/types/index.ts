@@ -1,4 +1,3 @@
-// types.ts
 export interface Producto {
   id_producto: number;
   nombre: string;
@@ -13,7 +12,8 @@ export interface Producto {
   estado: boolean;
   vencimiento?: Date;
   imagen_path?: string | null; // Mantener por compatibilidad
-  imagenes?: ProductoImagen[]; // Nuevo: múltiples imágenes
+  imagenes?: ProductoImagen[]; // Nuevo: múltiples imágenes}
+  destacado: boolean;
 }
 
 export interface ProductoImagen {
@@ -39,7 +39,6 @@ export interface Promocion {
   imagen_path?: string | null;
 }
 
-// Promoción con detalles en memoria (solo para uso en el cliente cuando editamos)
 export interface PromocionConDetalles extends Promocion {
   productos?: PromocionDetalleInput[];
 }

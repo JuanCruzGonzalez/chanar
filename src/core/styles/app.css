@@ -244,6 +244,17 @@ input {
   cursor: pointer;
   transition: var(--transition);
 }
+.btn-warning{
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  background-color: #ffc107;
+  color: white;
+}
 
 .btn-primary {
   background: var(--color-primary);

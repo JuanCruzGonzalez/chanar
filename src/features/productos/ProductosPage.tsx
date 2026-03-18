@@ -22,6 +22,7 @@ export const ProductosPage: React.FC = () => {
     modalNuevoProducto,
     openEditarProducto,
     handleToggleProductoEstado,
+    handleCambiarDestacado,
   } = useProductos();
 
   const { categorias } = useCategorias();
@@ -126,7 +127,7 @@ export const ProductosPage: React.FC = () => {
                 <th>Precio de Venta</th>
                 <th>Vencimiento</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <th style={{textAlign: 'center'}}>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -139,92 +140,100 @@ export const ProductosPage: React.FC = () => {
               ) : (
                 displayedProducts.map(producto => {
                   // Obtener imagen principal o primera imagen disponible
-                  const imagenMostrar = producto.imagenes?.find(img => img.es_principal) 
+                  const imagenMostrar = producto.imagenes?.find(img => img.es_principal)
                     || producto.imagenes?.[0]
                     || (producto.imagen_path ? { imagen_path: producto.imagen_path } : null);
-                  
+
                   return (
-                  <tr key={producto.id_producto}>
-                    <td>
-                      {imagenMostrar ? (
-                        <img
-                          src={getProductImageUrl(imagenMostrar.imagen_path) || undefined}
-                          alt={producto.nombre}
-                          style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
-                        />
-                      ) : (
-                        <div style={{ width: '50px', height: '50px', backgroundColor: '#f0f0f0', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#999' }}>
-                          Sin imagen
-                        </div>
-                      )}
-                    </td>
-                    <td className="font-medium">{producto.nombre}</td>
-                    <td className="text-muted">
-                      ${producto.unidad_medida?.id_unidad_medida === 1 ? (producto.costo * 100).toFixed(2) : producto.costo.toFixed(2)}
-                      {producto.unidad_medida?.id_unidad_medida === 1 ? ' x100gr' : ''}
-                    </td>
-                    <td className="text-muted">
-                      ${producto.unidad_medida?.id_unidad_medida === 1 ? (producto.precioventa * 100).toFixed(2) : producto.precioventa.toFixed(2)}
-                      {producto.unidad_medida?.id_unidad_medida === 1 ? ' x100gr' : ''}
-                    </td>
-                    <td className="text-muted">{producto.vencimiento ? new Date(producto.vencimiento).toLocaleDateString() : 'N/A'}</td>
-                    <td>
-                      <span className={`status-badge ${producto.estado ? 'active' : 'inactive'}`}>
-                        {producto.estado ? 'Activo' : 'Inactivo'}
-                      </span>
-                    </td>
-                    <td style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <button
-                        className="btn-sm btn-secondary mr-2"
-                        aria-label="Editar"
-                        onClick={() => openEditarProducto(producto)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="icon-pencil"
-                        >
-                          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" />
-                          <path d="M20.71 7.04a1.003 1.003 0 0 0 0-1.41l-2.34-2.34a1.003 1.003 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                        </svg>
-                      </button>
-                      {producto.estado ? (
+                    <tr key={producto.id_producto}>
+                      <td>
+                        {imagenMostrar ? (
+                          <img
+                            src={getProductImageUrl(imagenMostrar.imagen_path) || undefined}
+                            alt={producto.nombre}
+                            style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                          />
+                        ) : (
+                          <div style={{ width: '50px', height: '50px', backgroundColor: '#f0f0f0', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#999' }}>
+                            Sin imagen
+                          </div>
+                        )}
+                      </td>
+                      <td className="font-medium">{producto.nombre}</td>
+                      <td className="text-muted">
+                        ${producto.unidad_medida?.id_unidad_medida === 1 ? (producto.costo * 100).toFixed(2) : producto.costo.toFixed(2)}
+                        {producto.unidad_medida?.id_unidad_medida === 1 ? ' x100gr' : ''}
+                      </td>
+                      <td className="text-muted">
+                        ${producto.unidad_medida?.id_unidad_medida === 1 ? (producto.precioventa * 100).toFixed(2) : producto.precioventa.toFixed(2)}
+                        {producto.unidad_medida?.id_unidad_medida === 1 ? ' x100gr' : ''}
+                      </td>
+                      <td className="text-muted">{producto.vencimiento ? new Date(producto.vencimiento).toLocaleDateString() : 'N/A'}</td>
+                      <td>
+                        <span className={`status-badge ${producto.estado ? 'active' : 'inactive'}`}>
+                          {producto.estado ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </td>
+                      <td style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'end', width: '100%' }}>
                         <button
-                          className="btn-sm btn-danger"
-                          aria-label="Dar de baja"
-                          onClick={() => handleToggleProductoEstado(producto.id_producto, producto.estado, producto.nombre)}
-                          style={{ width: '40px', display: 'flex', justifyContent: 'center', height: '40px', border: '1px solid #ddd', padding: 10 }}
+                        style={{display: 'flex', gap: '5px'}}
+                          className={`btn-sm btn-${producto.destacado ? 'warning' : 'primary'} mr-2`}
+                          aria-label="Editar"
+                          onClick={() => handleCambiarDestacado(producto.id_producto, producto.destacado, producto.nombre)}
                         >
-                          {/* Trash icon */}
-                          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                            <path d="M10 11v6"></path>
-                            <path d="M14 11v6"></path>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.12 2.12 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.12 2.12 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.12 2.12 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.12 2.12 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.12 2.12 0 0 0 1.597-1.16z"></path></svg> <span>{producto.destacado ? 'Quitar' : 'Destacar'}</span>
+                        </button>
+                        <button
+                          className="btn-sm btn-secondary mr-2"
+                          aria-label="Editar"
+                          onClick={() => openEditarProducto(producto)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="icon-pencil"
+                          >
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" />
+                            <path d="M20.71 7.04a1.003 1.003 0 0 0 0-1.41l-2.34-2.34a1.003 1.003 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                           </svg>
                         </button>
-                      ) : (
-                        <button
-                          className="btn-sm btn-primary"
-                          aria-label="Dar de alta"
-                          onClick={() => handleToggleProductoEstado(producto.id_producto, producto.estado, producto.nombre)}
-                          style={{ width: '40px', display: 'flex', height: '40px', border: '1px solid #ddd', padding: 10 }}
-                        >
-                          {/* Arrow up icon */}
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path fillRule="evenodd" clipRule="evenodd" d="M12 3C12.2652 3 12.5196 3.10536 12.7071 3.29289L19.7071 10.2929C20.0976 10.6834 20.0976 11.3166 19.7071 11.7071C19.3166 12.0976 18.6834 12.0976 18.2929 11.7071L13 6.41421V20C13 20.5523 12.5523 21 12 21C11.4477 21 11 20.5523 11 20V6.41421L5.70711 11.7071C5.31658 12.0976 4.68342 12.0976 4.29289 11.7071C3.90237 11.3166 3.90237 10.6834 4.29289 10.2929L11.2929 3.29289C11.4804 3.10536 11.7348 3 12 3Z" fill="#fff" />
-                          </svg>
-                        </button>
-                      )}
-                    </td>
-                  </tr>
+                        {producto.estado ? (
+                          <button
+                            className="btn-sm btn-danger"
+                            aria-label="Dar de baja"
+                            onClick={() => handleToggleProductoEstado(producto.id_producto, producto.estado, producto.nombre)}
+                            style={{ width: '40px', display: 'flex', justifyContent: 'center', height: '40px', border: '1px solid #ddd', padding: 10 }}
+                          >
+                            {/* Trash icon */}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                              <path d="M10 11v6"></path>
+                              <path d="M14 11v6"></path>
+                            </svg>
+                          </button>
+                        ) : (
+                          <button
+                            className="btn-sm btn-primary"
+                            aria-label="Dar de alta"
+                            onClick={() => handleToggleProductoEstado(producto.id_producto, producto.estado, producto.nombre)}
+                            style={{ width: '40px', display: 'flex', height: '40px', border: '1px solid #ddd', padding: 10 }}
+                          >
+                            {/* Arrow up icon */}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path fillRule="evenodd" clipRule="evenodd" d="M12 3C12.2652 3 12.5196 3.10536 12.7071 3.29289L19.7071 10.2929C20.0976 10.6834 20.0976 11.3166 19.7071 11.7071C19.3166 12.0976 18.6834 12.0976 18.2929 11.7071L13 6.41421V20C13 20.5523 12.5523 21 12 21C11.4477 21 11 20.5523 11 20V6.41421L5.70711 11.7071C5.31658 12.0976 4.68342 12.0976 4.29289 11.7071C3.90237 11.3166 3.90237 10.6834 4.29289 10.2929L11.2929 3.29289C11.4804 3.10536 11.7348 3 12 3Z" fill="#fff" />
+                            </svg>
+                          </button>
+                        )}
+                      </td>
+                    </tr>
                   );
                 })
               )}
@@ -240,7 +249,7 @@ export const ProductosPage: React.FC = () => {
       />
 
       {/* Modales */}
-      <ModalNuevoProducto 
+      <ModalNuevoProducto
         unidadesMedida={unidadesMedida}
         categorias={categorias}
       />

@@ -157,10 +157,12 @@ export const ClientePage: React.FC = () => {
 
   // Paginación
   const totalPages = Math.ceil(productosFiltrados.length / PAGE_SIZE);
+
   const productosPaginados = productosFiltrados.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+
   const getPageNumbers = (): (number | 'ellipsis')[] => {
     const pages: (number | 'ellipsis')[] = [];
     if (totalPages <= 5) {

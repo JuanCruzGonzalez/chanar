@@ -45,7 +45,7 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
   const [precioPromocion, setPrecioPromocion] = useState(initialProduct?.precio_promocion ? String(initialProduct.precio_promocion) : '');
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<number[]>(categoriasIniciales);
   const [modalCategoriasOpen, setModalCategoriasOpen] = useState(false);
-
+  const [destacado, setDestacado] = useState(false)
   useEffect(() => {
     if (initialProduct) {
       setNombre(initialProduct.nombre ?? '');
@@ -84,6 +84,7 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
           : ''
       );
       setImagenes(initialProduct.imagenes || []);
+      setDestacado(initialProduct.destacado)
     } else {
       setNombre('');
       setDescripcion('');
@@ -97,6 +98,7 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
       setPromocionActiva(false);
       setPrecioPromocion('');
       setCategoriasSeleccionadas([]);
+      setDestacado(false)
     }
   }, [initialProduct, isOpen]);
 
@@ -128,9 +130,11 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
       vencimiento: vencimiento ? new Date(vencimiento) : null,
       promocionActiva: promocionActiva,
       precioPromocion: precioPromocionFinal,
+      destacado: destacado,
     };
 
     if (initialProduct) {
+      console.log(productoData)
       await handleEditarProducto(productoData, imagenes, categoriasSeleccionadas);
     } else {
       await handleNuevoProducto(productoData, imagenes, categoriasSeleccionadas);
@@ -148,6 +152,7 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
     setPromocionActiva(false);
     setPrecioPromocion('');
     setCategoriasSeleccionadas([]);
+    setDestacado(false)
   };
   const textoGramos = unidadMedida === '1' ? '(por 100 gramos)' : '';
   return (
@@ -250,6 +255,13 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
             <select value={estadoProducto} onChange={(e) => setEstadoProducto(e.target.value)}>
               <option value="1">Activo</option>
               <option value="2">Inactivo</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Destacar</label>
+            <select value={destacado ? '1' : '2'} onChange={(e) => setDestacado(e.target.value === '1')}>
+              <option value="1">SI</option>
+              <option value="2">NO</option>
             </select>
           </div>
           <div className="form-group">

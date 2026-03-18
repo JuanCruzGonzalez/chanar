@@ -63,7 +63,8 @@ export async function getProductos() {
     ),
     estado,
     vencimiento,
-    imagen_path
+    imagen_path,
+    destacado
   `)
   .order('nombre', { ascending: true })
   // PostgREST/Supabase may apply a default limit (often 25). Use range to
@@ -93,6 +94,7 @@ export async function getProductos() {
     estado: p.estado,
     vencimiento: parseDateLocal(p.vencimiento),
     imagen_path: p.imagen_path,
+    destacado: p.destacado,
   })) as Producto[];
 
   // Cargar imágenes de todos los productos
@@ -118,11 +120,11 @@ export async function getProductosActivos() {
     ),
     estado,
     vencimiento,
-    imagen_path
+    imagen_path,
+    destacado
   `).eq('estado', true)
-  .order('nombre', { ascending: true })
+  .order('destacado', { ascending: false })
   .range(0, 999);
-      
       
   if (error) {
     console.error('Error al obtener productos:', error);
@@ -147,6 +149,7 @@ export async function getProductosActivos() {
     estado: p.estado,
     vencimiento: parseDateLocal(p.vencimiento),
     imagen_path: p.imagen_path,
+    destacado: p.destacado,
   })) as Producto[];
 
   // Cargar imágenes de todos los productos
@@ -183,6 +186,7 @@ export async function buscarProductos(q: string) {
     estado,
     vencimiento,
     imagen_path,
+    destacado,
     unidad_medida (
       id_unidad_medida,
       nombre,
@@ -212,6 +216,7 @@ export async function buscarProductos(q: string) {
     estado: p.estado,
     vencimiento: parseDateLocal(p.vencimiento),
     imagen_path: p.imagen_path,
+    destacado: p.destacado,
     unidad_medida: Array.isArray(p.unidad_medida) ? (p.unidad_medida[0] ?? null) : (p.unidad_medida ?? null),
   })) as Producto[];
 
@@ -237,6 +242,7 @@ export async function getProductosPage(page = 1, pageSize = 5, q = '') {
     estado,
     vencimiento,
     imagen_path,
+    destacado,
     unidad_medida ( id_unidad_medida, nombre, abreviacion )
   `;
 
@@ -285,6 +291,7 @@ export async function getProductosPage(page = 1, pageSize = 5, q = '') {
     unidad_medida: Array.isArray(p.unidad_medida) ? (p.unidad_medida[0] ?? null) : (p.unidad_medida ?? null),
     vencimiento: parseDateLocal(p.vencimiento),
     imagen_path: p.imagen_path,
+    destacado: p.destacado,
   })) as Producto[];
 
   // Cargar imágenes de todos los productos
@@ -336,6 +343,66 @@ export async function updateStockProducto(id_producto: number, nuevoStock: numbe
   return data as Producto;
 }
 
+
+
+export async function updateProductoDestacado(id_producto: number, destacado: boolean) {
+  // Try RPC first
+  try {
+    const { data: rpcData, error: rpcError } = await supabase.rpc('update_producto_destacado', {
+      p_id_producto: id_producto,
+      p_destacado: destacado,
+    });
+    if (!rpcError && rpcData) {
+      const p: any = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+      return {
+        id_producto: p.id_producto,
+        nombre: p.nombre,
+        descripcion: p.descripcion,
+        stock: p.stock,
+        costo: p.costo,
+        precioventa: p.precioventa,
+        id_unidad_medida: p.id_unidad_medida,
+        estado: p.estado,
+        destacado: p.destacado,
+        unidad_medida: Array.isArray(p.unidad_medida) ? (p.unidad_medida[0] ?? null) : (p.unidad_medida ?? null),
+      } as Producto;
+    }
+  } catch (e) {
+    console.error(e)
+  }
+
+  const { data, error } = await supabase
+    .from('producto')
+    .update({ destacado })
+    .eq('id_producto', id_producto)
+    .select(`id_producto,nombre,descripcion,stock,costo,precioventa,id_unidad_medida,estado,destacado,unidad_medida(id_unidad_medida,nombre,abreviacion)`)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error al actualizar destacado de producto:', error);
+    await handleAuthError(error);
+    throw error;
+  }
+
+  if (!data) return null;
+
+  const p: any = data;
+  return {
+    id_producto: p.id_producto,
+    nombre: p.nombre,
+    descripcion: p.descripcion,
+    stock: p.stock,
+    costo: p.costo,
+    precioventa: p.precioventa,
+    id_unidad_medida: p.id_unidad_medida,
+    estado: p.estado,
+    destacado: p.destacado,
+    unidad_medida: Array.isArray(p.unidad_medida) ? (p.unidad_medida[0] ?? null) : (p.unidad_medida ?? null),
+  } as Producto;
+}
+
+
+
 export async function getUnidadesMedidas() {
   const { data, error } = await supabase
     .from('unidad_medida')
@@ -368,6 +435,7 @@ export async function updateProducto(
     estado: boolean;
     vencimiento?: Date | null;
     imagen_path?: string | null;
+    destacado?: boolean;
   }>
 ) {
   // Try RPC transaction first

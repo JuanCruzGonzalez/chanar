@@ -9,6 +9,7 @@ import {
   updateProducto,
   updateProductoEstado,
   updateStockProducto,
+  updateProductoDestacado,
 } from '../services/productoService';
 import { uploadProductImage } from '../../../shared/services/storageService';
 import { 
@@ -32,6 +33,7 @@ interface ProductoFormData {
   vencimiento?: Date | null;
   promocionActiva?: boolean;
   precioPromocion?: number | null;
+  destacado: boolean;
 }
 
 interface ProductosContextValue {
@@ -75,6 +77,11 @@ interface ProductosContextValue {
   ) => Promise<void>;
   openEditarProducto: (producto: Producto) => Promise<void>;
   handleToggleProductoEstado: (
+    id_producto: number,
+    currentEstado: boolean,
+    nombre?: string
+  ) => Promise<void>;
+  handleCambiarDestacado: (
     id_producto: number,
     currentEstado: boolean,
     nombre?: string
@@ -178,6 +185,7 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
         id_unidad_medida: producto.unidadMedida,
         estado: producto.estado,
         vencimiento: producto.vencimiento || undefined,
+        destacado: producto.destacado
       });
 
       // Si hay imágenes, procesarlas
@@ -257,6 +265,7 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
         id_unidad_medida: producto.unidadMedida,
         estado: producto.estado,
         vencimiento: producto.vencimiento || undefined,
+        destacado: producto.destacado
       });
 
       if (!updated) {
@@ -345,6 +354,24 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
   const toggleEstadoMutation = useMutation({
     mutationFn: async ({ id_producto, newEstado }: { id_producto: number; newEstado: boolean }) => {
       return await updateProductoEstado(id_producto, newEstado);
+    }, 
+    onSuccess: (updated) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.productos });
+      queryClient.invalidateQueries({ queryKey: queryKeys.productosActivos });
+      if (updated) {
+        showSuccess(`Producto ${updated.nombre} actualizado correctamente`);
+      }
+    }, 
+    onError: (err: any) => {
+      const message =
+        err?.message || err?.error || (typeof err === 'string' ? err : JSON.stringify(err));
+      showError(message || 'No se pudo actualizar el estado del producto');
+    },
+  });
+  
+  const toggleDestacadoMutation = useMutation({
+    mutationFn: async ({ id_producto, newDestacado }: { id_producto: number; newDestacado: boolean }) => {
+      return await updateProductoDestacado(id_producto, newDestacado);
     }, 
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.productos });
@@ -475,6 +502,27 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
     },
     [showConfirm, showError, toggleEstadoMutation]
   );
+  const handleCambiarDestacado = useCallback(
+    async (id_producto: number, currentEstado: boolean, nombre?: string ) => {
+      showConfirm(
+        currentEstado ? 'Dejar de destacar este producto' : 'Destacar este producto',
+        `¿Seguro que quieres ${currentEstado ? 'dejar de destacar este' : 'destacar'} el producto ${
+          nombre ?? '#' + id_producto
+        }?`,
+        async () => {
+          const updated = await toggleDestacadoMutation.mutateAsync({
+            id_producto,
+            newDestacado: !currentEstado,
+          });
+          if (!updated) {
+            showError(`No se encontró el producto #${id_producto}`);
+          }
+        },
+        'warning'
+      );
+    },
+    [showConfirm, showError, toggleDestacadoMutation]
+  );
 
   /**
    * Actualiza el stock de un producto
@@ -518,6 +566,7 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
     openEditarProducto,
     handleToggleProductoEstado,
     handleActualizarStock,
+    handleCambiarDestacado,
 
     // Estados de loading (React Query)
     isCreatingProducto: crearProductoMutation.isPending,
