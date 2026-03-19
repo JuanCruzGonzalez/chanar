@@ -1722,7 +1722,7 @@
 
 /* --- Variables compartidas --- */
 :root {
-  --home-primary: #6B7A2F;
+  --home-primary: #037a35be;
   --home-primary-light: #8A9E3C;
   --home-primary-dark: #505C23;
   --home-accent: #A3B04A;
@@ -2533,7 +2533,7 @@
 
 .promociones-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 32px;
   animation: homeFadeIn 0.4s ease-out;
 }
@@ -2544,8 +2544,9 @@
   overflow: hidden;
   box-shadow: var(--home-shadow);
   transition: transform 0.2s, box-shadow 0.2s;
-  display: flex;
-  min-width: 600px;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  min-width: 250px;
   border: 1px solid var(--home-border);
 }
 
@@ -2585,6 +2586,7 @@
   padding: 12px;
   background: rgba(0, 0, 0, 0.05);
   border-radius: 8px;
+  max-width: 320px;
 }
 
 .promocion-card-productos-label {
@@ -2661,16 +2663,7 @@
   margin-top: auto;
 }
 
-.promocion-card-button:hover {
-  background: var(--home-primary-dark);
-  transform: translateY(-1px);
-}
-
-.promocion-card-button:active {
-  transform: translateY(0);
-}
-
-.promocion-card-button svg {
+v dhgnfdcghfdt.promocion-card-button svg {
   flex-shrink: 0;
 }
 

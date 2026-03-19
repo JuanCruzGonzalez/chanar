@@ -562,6 +562,7 @@ export const ClientePage: React.FC = () => {
         <ClientePromociones
           busqueda={busqueda}
           agregarPromocionAlCarrito={agregarPromocionAlCarrito}
+          productos={productos.filter(producto => producto.promocion_activa === true)}
         />
       )}
 
